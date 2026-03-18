@@ -1,7 +1,9 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import logoImg from './assets/Logo.png'
-import Profile from './Profile'
+import Profile from './Register'
+import Login from './Login'
+import User from './User'
 
 function LandingPage() {
   return (
@@ -18,6 +20,14 @@ function LandingPage() {
         <Link to="/profile" className="primary-button">
           Zacznij teraz!
         </Link>
+
+
+        <div className="login-section">
+          <p className="login-text">Masz już konto?</p>
+          <Link to="/login" className="secondary-button">
+            Zaloguj się
+          </Link>
+        </div>
       </header>
     </div>
   )
@@ -30,6 +40,10 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/user" element={<User />} />
       </Routes>
     </BrowserRouter>
   )

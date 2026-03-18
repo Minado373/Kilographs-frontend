@@ -72,3 +72,32 @@
   width: auto;
   display: block;
 }
+
+.login-section {
+  margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.secondary-button {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 1.25rem 2.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.secondary-button:hover {
+  background-color: #15803d;
+}
