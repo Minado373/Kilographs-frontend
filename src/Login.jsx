@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import './Login.css'
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
@@ -15,22 +16,22 @@ function Login() {
     setError('')
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      })
+      // const response = await fetch('http://127.0.0.1:8000/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ username, password }),
+      // })
 
-      if (!response.ok) {
-        const data = await response.json()
-        setError(data.detail)
-        return
-      }
+      // if (!response.ok) {
+      //   const data = await response.json()
+      //   setError(data.detail)
+      //   return
+      // }
 
       
-      navigate('/user')
+      navigate('/dashboard')
 
     } catch (err) {
       setError('Błędne hasło lub login')

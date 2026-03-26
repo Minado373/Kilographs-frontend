@@ -1,9 +1,12 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import logoImg from './assets/Logo.png'
-import Profile from './Register'
+import Register from './Register'
 import Login from './Login'
-import User from './User'
+import Profile from './Profile'
+import Dashboard from './Dashboard'
+import Diet from './Diet'
+import Workout from './Workout'
 
 function LandingPage() {
   return (
@@ -17,7 +20,7 @@ function LandingPage() {
       <header className="hero-section">
         <h2 className="main-heading">Dieta i Trening uszyte na miarę.</h2>
         <p className="sub-heading">Generuj spersonalizowane plany w kilka sekund dzięki AI.</p>
-        <Link to="/profile" className="primary-button">
+        <Link to="/register" className="primary-button">
           Zacznij teraz!
         </Link>
 
@@ -39,11 +42,17 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/register" element={<Register />} />
 
         <Route path="/login" element={<Login />} />
 
-        <Route path="/user" element={<User />} />
+        <Route path="/profile" element={<Profile />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route path="/diet" element={<Diet />} />
+
+        <Route path="/workout" element={<Workout />} />
       </Routes>
     </BrowserRouter>
   )
