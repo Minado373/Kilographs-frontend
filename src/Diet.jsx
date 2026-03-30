@@ -1,5 +1,5 @@
-import './Dashboard.css'; // Importujemy bazowe style dashboardu
-import './Diet.css';      // Dodatkowe style dla diety
+import './Dashboard.css'; 
+import './Diet.css';   
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 

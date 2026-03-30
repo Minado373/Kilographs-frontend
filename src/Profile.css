@@ -144,7 +144,6 @@
   box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
 }
 
-/* Sekcja Zdrowie i Alergie (Pigułki) */
 .health-grid {
   display: flex;
   flex-wrap: wrap;
@@ -177,6 +176,7 @@
   border-color: #16a34a;
   color: #15803d;
 }
+
 
 .profile-divider {
   margin: 2rem 0;
@@ -215,7 +215,7 @@
   display: none;
 }
 
-/* Wynik i Animacje */
+
 .result-card {
   margin-top: 2rem;
   border-left: 6px solid #16a34a !important;
@@ -239,11 +239,26 @@
   border: 1px solid #fef3c7;
 }
 
+
 .profile-actions {
   margin-top: 2.5rem;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+}
+
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  color: #111827;
 }
 
 .btn-save {
@@ -255,7 +270,9 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);
+
   transition: all 0.2s;
+
 }
 
 .btn-save:hover {
@@ -272,9 +289,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsywność */
 @media (max-width: 768px) {
   .profile-grid, .radio-grid {
     grid-template-columns: 1fr;
   }
+
 }

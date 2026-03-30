@@ -16,9 +16,10 @@ function Login() {
     try {
       //usuń potem , login do testowania
       if (email === "admin@email.com" && password === "1234") {
+
         localStorage.setItem('userName', 'Admin')
-        localStorage.setItem('userEmail', email)   // opcjonalnie, symulacja sesji
-        localStorage.setItem('userCalories', '2000') // przykładowe dane
+        localStorage.setItem('userEmail', email)   
+        localStorage.setItem('userCalories', '2000') 
         navigate('/dashboard')
         return
         }
@@ -28,7 +29,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),  // teraz OK
+        body: JSON.stringify({ email, password }), 
       })
 
       if (!response.ok) {

@@ -23,6 +23,7 @@ function Dashboard() {
   const userCalories = localStorage.getItem('userCalories') || 'Brak danych';
   const userName = localStorage.getItem('userName') || 'Użytkownik';
 
+
   return (
     <div className="dashboard-layout">
       <aside className="sidebar">
@@ -52,6 +53,7 @@ function Dashboard() {
           <div className="dashboard-date">
             {new Date().toLocaleDateString('en-EN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
+
         </header>
 
         <div className="widgets-grid">
