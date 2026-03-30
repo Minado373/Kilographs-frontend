@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import './Login.css'
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
-
 function Login() {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')  // <-- zmienione z username
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
@@ -21,7 +19,7 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),  // teraz OK
       })
 
       if (!response.ok) {
@@ -30,7 +28,6 @@ function Login() {
         return
       }
 
-      
       navigate('/dashboard')
 
     } catch (err) {
@@ -45,11 +42,11 @@ function Login() {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <input
-            type="text"
-            placeholder="Login"
+            type="email"
+            placeholder="Email"
             className="login-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
@@ -67,7 +64,7 @@ function Login() {
           </button>
         </form>
         <p className="login-footer">
-          Nie masz konta? <Link to="/">Wróć</Link>
+          Nie masz konta? <Link to="/register">Zarejestruj się</Link>
         </p>
       </div>
     </div>

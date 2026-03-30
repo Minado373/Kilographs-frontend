@@ -1,36 +1,44 @@
-/* eslint-disable no-unused-vars */
 import './Register.css'
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
 function Register() {
   const [name, setName] = useState('')
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  setError('')
+    e.preventDefault()
+    setError('')
 
+    if (!name || !email || !password) {
+      setError('Wszystkie pola są wymagane')
+      return
+    }
 
-  if (!name || !username || !password) {
-    setError('Wszystkie pola są wymagane')
-    return
+    try {
+      const response = await fetch('http://127.0.0.1:8000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }), // <-- wysyłamy name + email + password
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        setError(data.detail || 'Błąd rejestracji')
+        return
+      }
+
+      alert('Konto utworzone!')
+      navigate('/login')
+    } catch (err) {
+      setError('Błąd serwera')
+    }
   }
 
-  try {
-    console.log({ name, username, password })
-
-    alert('Konto utworzone ')
-    navigate('/login')
-
-  } catch (err) {
-    setError('Błąd serwera')
-  }
-}
   return (
     <div className="register-page">
       <div className="register-card">
@@ -46,11 +54,11 @@ function Register() {
           />
 
           <input
-            type="text"
-            placeholder="Login"
+            type="email"
+            placeholder="Email"
             className="register-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
