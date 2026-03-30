@@ -14,6 +14,14 @@ function Login() {
     setError('')
 
     try {
+      //usuń potem , login do testowania
+      if (email === "admin@email.com" && password === "1234") {
+        localStorage.setItem('userEmail', email)   // opcjonalnie, symulacja sesji
+        localStorage.setItem('userCalories', '2000') // przykładowe dane
+        navigate('/dashboard')
+        return
+        }
+        
       const response = await fetch('http://127.0.0.1:8000/login', {
         method: 'POST',
         headers: {
