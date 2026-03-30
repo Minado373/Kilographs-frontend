@@ -1,0 +1,280 @@
+.profile-page-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  width: 100%;
+}
+
+.app-sidebar {
+  width: 256px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin-bottom: 2.5rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar-button:hover {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.sidebar-button.active {
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.sidebar-logout {
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sidebar-logout:hover {
+  background-color: #fef2f2;
+}
+
+.profile-main-content {
+  flex: 1;
+  padding: clamp(2rem, 5vw, 5rem) clamp(2rem, 6vw, 8rem);
+}
+
+.profile-header {
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 1100px; 
+}
+
+.profile-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.profile-subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: clamp(2rem, 3vw, 3.5rem);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 1100px; 
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+/* Sekcja Zdrowie i Alergie (Pigułki) */
+.health-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.health-tag {
+  padding: 0.6rem 1rem;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.health-tag:hover {
+  border-color: #16a34a;
+  background-color: #f3f4f6;
+}
+
+.health-tag.active {
+  background-color: #f0fdf4;
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.profile-divider {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.radio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.radio-card {
+  border: 1px solid #d1d5db;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  background-color: #ffffff;
+}
+
+.radio-card:hover {
+  border-color: #16a34a;
+}
+
+.radio-card.active {
+  background-color: #f0fdf4;
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.hidden-radio {
+  display: none;
+}
+
+/* Wynik i Animacje */
+.result-card {
+  margin-top: 2rem;
+  border-left: 6px solid #16a34a !important;
+  background: linear-gradient(to right, #ffffff, #f0fdf4);
+}
+
+.calories-highlight {
+  color: #16a34a;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-left: 0.5rem;
+}
+
+.health-warning {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #92400e;
+  background-color: #fffbeb;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fef3c7;
+}
+
+.profile-actions {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-save {
+  padding: 0.75rem 2rem;
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);
+  transition: all 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #15803d;
+  transform: translateY(-1px);
+}
+
+.animation-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+  .profile-grid, .radio-grid {
+    grid-template-columns: 1fr;
+  }
+}

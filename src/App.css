@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.main-layout {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  width: 100%;
+}
+
+.navigation-bar {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.hero-section {
+  width: 100%;
+  padding: 5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-heading {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.sub-heading {
+  font-size: 2rem;
+  color: #4b5563;
+  margin-bottom: 2rem;
+}
+
+.primary-button {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 1.25rem 2.5rem;
+  border-radius: 9999px;
+  font-size: 2rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+  background-color: #15803d;
+}
+
+.brand-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo-img {
+  height: 150px;
+  width: auto;
+  display: block;
+}
+
+.login-section {
+  margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-text {
+  font-size: 18px;
+  color: #666;
+}
+
+.secondary-button {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #ffffff;
+  padding: 1.25rem 2.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.secondary-button:hover {
+  background-color: #15803d;
+}
