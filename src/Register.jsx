@@ -1,43 +1,44 @@
-import './Register.css'
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import "./Register.css";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
     if (!name || !email || !password) {
-      setError('Wszystkie pola są wymagane')
-      return
+      setError("Wszystkie pola są wymagane");
+      return;
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`${backendUrl}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }), // <-- wysyłamy name + email + password
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        setError(data.detail || 'Błąd rejestracji')
-        return
+        const data = await response.json();
+        setError(data.detail || "Błąd rejestracji");
+        return;
       }
 
-      alert('Konto utworzone!')
-      navigate('/login')
+      alert("Konto utworzone!");
+      navigate("/login");
     } catch (err) {
-      setError('Błąd serwera')
+      setError("Błąd serwera");
     }
-  }
+  };
 
   return (
     <div className="register-page">
@@ -81,7 +82,7 @@ function Register() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;
