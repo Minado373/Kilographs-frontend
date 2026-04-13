@@ -8,7 +8,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
   const toggleCalories = () => {
     setIsCaloriesExpanded(!isCaloriesExpanded);
@@ -22,35 +22,43 @@ function Dashboard() {
   const userName = localStorage.getItem("userName") || "Użytkownik";
   const userId = localStorage.getItem("userId");
 
-  // 🔥 POBIERANIE Z BACKENDU
   useEffect(() => {
     const fetchProfile = async () => {
       if (!userId) {
         setLoading(false);
+        navigate("/login");
         return;
       }
 
       try {
-        const res = await fetch(`${backendUrl}/profile/${userId}`);
+        const token = localStorage.getItem("token");
 
-        if (!res.ok) throw new Error("Błąd pobierania");
+        if (!token) {
+          localStorage.clear();
+          navigate("/login");
+          return;
+        }
+
+        const res = await fetch(`${backendUrl}/profile/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Błąd pobierania profilu");
 
         const data = await res.json();
 
-        if (data && data.calories) {
+        if (data?.calories) {
           setCalories(data.calories);
-
-          // fallback zapis
           localStorage.setItem("userCalories", data.calories);
         } else {
-          // fallback z localStorage
           const localCalories = localStorage.getItem("userCalories");
           if (localCalories) setCalories(localCalories);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Fetch profile error:", err);
 
-        // fallback z localStorage
         const localCalories = localStorage.getItem("userCalories");
         if (localCalories) setCalories(localCalories);
       } finally {
@@ -59,26 +67,20 @@ function Dashboard() {
     };
 
     fetchProfile();
-  }, [userId]);
+  }, [userId, navigate, backendUrl]);
 
   return (
     <div className="dashboard-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
+
         <nav className="sidebar-nav">
-          <Link to="/dashboard" className="sidebar-button">
-            🏠 Dashboard
-          </Link>
-          <Link to="/diet" className="sidebar-button">
-            🥗 Diet
-          </Link>
-          <Link to="/workout" className="sidebar-button">
-            💪 Workouts
-          </Link>
-          <Link to="/profile" className="sidebar-button">
-            👤 Profile
-          </Link>
+          <Link to="/dashboard" className="sidebar-button">🏠 Dashboard</Link>
+          <Link to="/diet" className="sidebar-button">🥗 Diet</Link>
+          <Link to="/workout" className="sidebar-button">💪 Workouts</Link>
+          <Link to="/profile" className="sidebar-button">👤 Profile</Link>
         </nav>
+
         <div className="sidebar-footer">
           <button className="sidebar-logout" onClick={handleLogout}>
             Logout
@@ -89,6 +91,7 @@ function Dashboard() {
       <main className="dashboard-content">
         <header className="dashboard-header">
           <h1 className="dashboard-title">Welcome, {userName}! 👋</h1>
+
           <div className="dashboard-date">
             {new Date().toLocaleDateString("en-EN", {
               weekday: "long",
@@ -100,7 +103,8 @@ function Dashboard() {
         </header>
 
         <div className="widgets-grid">
-          {/* 🔥 KALORIE */}
+
+
           <div
             className={`widget-card border-green ${isCaloriesExpanded ? "expanded" : ""}`}
             onClick={toggleCalories}
@@ -113,44 +117,41 @@ function Dashboard() {
                   ? "Loading..."
                   : calories
                     ? `${calories} kcal`
-                    : "Brak danych"}
+                    : "-"}
               </h3>
             </div>
 
-            {/* 🔽 ROZWINIĘCIE */}
             {isCaloriesExpanded && calories && (
               <div className="macros-container">
                 <div className="macro-item">
-                  <span className="macro-label">Protein:</span>
-                  <span className="macro-value">
-                    {Math.round((calories * 0.27) / 4)}g
-                  </span>
+                  <span>Protein:</span>
+                  <span>{Math.round((calories * 0.27) / 4)}g</span>
                 </div>
+
                 <div className="macro-item">
-                  <span className="macro-label">Carbs:</span>
-                  <span className="macro-value">
-                    {Math.round((calories * 0.48) / 4)}g
-                  </span>
+                  <span>Carbs:</span>
+                  <span>{Math.round((calories * 0.48) / 4)}g</span>
                 </div>
+
                 <div className="macro-item">
-                  <span className="macro-label">Fat:</span>
-                  <span className="macro-value">
-                    {Math.round((calories * 0.25) / 9)}g
-                  </span>
+                  <span>Fat:</span>
+                  <span>{Math.round((calories * 0.25) / 9)}g</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 💧 WODA */}
+
           <div className="widget-card border-blue">
             <div className="widget-info">
               <p className="widget-label">Water</p>
+
               <h3 className="widget-value">
                 {calories ? `${(calories * 0.001).toFixed(1)} L` : "3.0 L"}
               </h3>
             </div>
           </div>
+
         </div>
       </main>
     </div>

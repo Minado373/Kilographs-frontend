@@ -5,27 +5,23 @@ import { useNavigate, Link } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
+  const [status, setStatus] = useState({ message: "", type: "" });
 
   const navigate = useNavigate();
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+
+  const showStatus = (msg, type) => {
+    setStatus({ message: msg, type });
+    setTimeout(() => setStatus({ message: "", type: "" }), 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setStatus({ message: "", type: "" });
 
-    try {
-      // Testowy login admina
-      if (email === "admin@email.com" && password === "1234") {
-        localStorage.setItem("userId", "1"); // <-- DODANE: ID dla admina
-        localStorage.setItem("userName", "Admin");
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("userCalories", "2000");
-        navigate("/dashboard");
-        return;
-      }
-
+    try {   
       const response = await fetch(`${backendUrl}/login`, {
         method: "POST",
         headers: {
@@ -37,55 +33,68 @@ function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.detail || "Błąd logowania");
+        showStatus(data.detail || "Invalid email or password", "error");
         return;
       }
 
-      // KLUCZOWA POPRAWKA: Zapisujemy dane zwrócone z FastAPI
-      if (data.user_id) {
-        localStorage.setItem("userId", data.user_id); // To ID jest wymagane przez Profile.js
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("userId", data.user_id);
         localStorage.setItem("userName", data.name);
-        navigate("/dashboard");
+        
+        showStatus("Login successful! Redirecting...", "success");
+        
+        setTimeout(() => navigate("/dashboard"), 1200);
       } else {
-        setError("Błąd: Serwer nie zwrócił ID użytkownika");
+        showStatus("Error: No token received from server", "error");
       }
     } catch (err) {
-      setError("Błąd połączenia z serwerem");
+      showStatus("Connection error. Is the server running?", "error");
     }
   };
 
   return (
     <div className="login-page">
       <div className="login-card">
-        <h2 className="login-title">Zaloguj się</h2>
+        <h2 className="login-title">Sign In</h2>
 
         <form className="login-form" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="login-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div className="input-container">
+            <input
+              type="email"
+              placeholder="Email address"
+              className="login-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Hasło"
-            className="login-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="input-container">
+            <input
+              type="password"
+              placeholder="Password"
+              className="login-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-          {error && <p className="error-text">{error}</p>}
+          {status.message && (
+            <div className={`status-message ${status.type}`}>
+              {status.type === "success" ? "✅ " : "❌ "}
+              {status.message}
+            </div>
+          )}
 
           <button type="submit" className="login-button">
-            Zaloguj
+            Login
           </button>
         </form>
+        
         <p className="login-footer">
-          Nie masz konta? <Link to="/register">Zarejestruj się</Link>
+          Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>
     </div>
