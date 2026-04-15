@@ -1,4 +1,4 @@
-import "./Dashboard.css";
+import "./style.css";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -70,7 +70,7 @@ function Dashboard() {
   }, [userId, navigate, backendUrl]);
 
   return (
-    <div className="dashboard-layout">
+    <div className="app-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
 
@@ -88,11 +88,11 @@ function Dashboard() {
         </div>
       </aside>
 
-      <main className="dashboard-content">
-        <header className="dashboard-header">
-          <h1 className="dashboard-title">Welcome, {userName}! 👋</h1>
+      <main className="page-content">
+        <header className="page-header">
+          <h1 className="page-title">Welcome, {userName}! 👋</h1>
 
-          <div className="dashboard-date">
+          <div className="page-date">
             {new Date().toLocaleDateString("en-EN", {
               weekday: "long",
               year: "numeric",

@@ -18,17 +18,17 @@ function LandingPage() {
       </nav>
 
       <header className="hero-section">
-        <h2 className="main-heading">Dieta i Trening uszyte na miarę.</h2>
-        <p className="sub-heading">Generuj spersonalizowane plany w kilka sekund dzięki AI.</p>
+        <h2 className="main-heading">Tailor-made Diet and Training.</h2>
+        <p className="sub-heading">Generate personalized plans in seconds with AI.</p>
         <Link to="/register" className="primary-button">
-          Zacznij teraz!
+          Get started now!
         </Link>
 
 
         <div className="login-section">
-          <p className="login-text">Masz już konto?</p>
+          <p className="login-text">Already have an account?</p>
           <Link to="/login" className="secondary-button">
-            Zaloguj się
+            Log in
           </Link>
         </div>
       </header>

@@ -1,5 +1,4 @@
-import './Dashboard.css';
-import './Workout.css';
+import './style.css';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -42,7 +41,7 @@ function Workout() {
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className="app-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
 
@@ -60,11 +59,11 @@ function Workout() {
         </div>
       </aside>
 
-      <main className="dashboard-content">
-        <header className="dashboard-header">
+      <main className="page-content">
+        <header className="page-header">
           <div>
-            <h1 className="dashboard-title">Today's Workout 🔥</h1>
-            <p className="dashboard-subtitle">
+            <h1 className="page-title">Today's Workout 🔥</h1>
+            <p className="page-subtitle">
               Crush your goals with a personalized routine
             </p>
           </div>

@@ -1,5 +1,4 @@
-import './Dashboard.css'; 
-import './Diet.css';   
+import './style.css';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -43,7 +42,7 @@ function Diet() {
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className="app-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
 
@@ -61,11 +60,11 @@ function Diet() {
         </div>
       </aside>
 
-      <main className="dashboard-content">
-        <header className="dashboard-header">
+      <main className="page-content">
+        <header className="page-header">
           <div>
-            <h1 className="dashboard-title">Your Daily Diet 🍎</h1>
-            <p className="dashboard-subtitle">
+            <h1 className="page-title">Your Daily Diet 🍎</h1>
+            <p className="page-subtitle">
               Manage your nutrition and meal plans
             </p>
           </div>

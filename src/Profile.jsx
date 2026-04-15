@@ -1,4 +1,4 @@
-import "./Profile.css";
+import "./style.css";
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -156,8 +156,8 @@ function Profile() {
 };
 
   return (
-    <div className="profile-page-wrapper">
-      <aside className="app-sidebar">
+    <div className="app-layout">
+      <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
         <nav className="sidebar-nav">
           <Link to="/dashboard" className="sidebar-button">🏠 Dashboard</Link>
@@ -170,10 +170,10 @@ function Profile() {
         </div>
       </aside>
 
-      <main className="profile-main-content">
-        <header className="profile-header">
-          <h1 className="profile-title">Profile Settings</h1>
-          <p className="profile-subtitle">Complete your data so AI can prepare your plan.</p>
+      <main className="page-content">
+        <header className="page-header">
+          <h1 className="page-title">Profile Settings</h1>
+          <p className="page-subtitle">Complete your data so AI can prepare your plan.</p>
         </header>
 
         <section className="profile-card">
