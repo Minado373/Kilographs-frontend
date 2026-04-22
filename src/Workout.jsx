@@ -1,10 +1,11 @@
 import './style.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Workout() {
   const [isGenerated, setIsGenerated] = useState(false);
   const [workoutData, setWorkoutData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
@@ -17,28 +18,72 @@ function Workout() {
     navigate('/login');
   };
 
+  useEffect(() => {
+    const fetchExistingWorkout = async () => {
+      if (!userId || !token) return;
+
+      try {
+        const res = await fetch(`${backendUrl}/my-plan/${userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.training) {
+            setWorkoutData(data.training);
+            setIsGenerated(true);
+          }
+        }
+      } catch (err) {
+        console.error("Błąd podczas sprawdzania istniejącego planu treningowego:", err);
+      }
+    };
+
+    fetchExistingWorkout();
+  }, [backendUrl, token, userId]);
+
   const handleGenerateWorkout = async () => {
+    setIsLoading(true);
     setIsGenerated(true);
 
     try {
-      const res = await fetch(`${backendUrl}/workout/${userId}`, {
-        method: "GET",
+      const res = await fetch(`${backendUrl}/generate-plan`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) throw new Error("Błąd pobierania workoutu");
+      if (!res.ok) throw new Error("Błąd generowania treningu");
 
       const data = await res.json();
-      setWorkoutData(data);
+      setWorkoutData(data.training);
 
     } catch (err) {
       console.error(err);
       setWorkoutData(null);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const getParsedWorkout = () => {
+    if (!workoutData) return null;
+    if (typeof workoutData === 'object') return workoutData;
+    try {
+      return JSON.parse(workoutData);
+    } catch (e) {
+      console.error("Nie udało się sparsować JSONa treningu:", e);
+      return null;
+    }
+  };
+
+  const parsedWorkout = getParsedWorkout();
 
   return (
     <div className="app-layout">
@@ -68,104 +113,85 @@ function Workout() {
             </p>
           </div>
 
-          <button className="generate-workout-btn" onClick={handleGenerateWorkout}>
-            Generate Training
+          <button 
+            className="generate-workout-btn" 
+            onClick={handleGenerateWorkout}
+            disabled={isLoading}
+            style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+          >
+            {isLoading ? "Generating..." : (isGenerated ? "Regenerate Training" : "Generate Training")}
           </button>
         </header>
 
-        {!isGenerated ? (
+        {isLoading ? (
+          <div className="empty-state-card workout-empty">
+            <h2>⏳ AI przygotowuje Twój trening...</h2>
+            <p>To potrwa tylko chwilę.</p>
+          </div>
+        ) : !isGenerated ? (
           <div className="empty-state-card workout-empty">
             <div className="empty-icon">🏋️‍♂️</div>
             <h2>No workout planned yet</h2>
             <p>Ready to sweat? Click the button to get your custom training session.</p>
           </div>
         ) : (
-          <div className="workout-list">
+          <div className="workouts-container">
+            {parsedWorkout ? (
+              Object.entries(parsedWorkout).map(([workoutName, exercises]) => (
+                <div key={workoutName} className="workout-day-card" style={{ marginBottom: '2.5rem', padding: '1.5rem', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                  <h2 style={{ textTransform: 'capitalize', borderBottom: '2px solid #eee', paddingBottom: '10px', color: '#333', marginBottom: '20px' }}>
+                    {workoutName.replace('_', ' ')}
+                  </h2>
+                  
+                  <div className="workout-list">
+                    {exercises.map((ex, index) => (
+                      <div
+                        key={index}
+                        className="exercise-card animation-slide-in"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="exercise-info">
+                          <div className="exercise-main">
+                            <span className="exercise-number">
+                              #{index + 1}
+                            </span>
+                            <h3 className="exercise-name">{ex.exercise_name}</h3> 
+                          </div>
 
-            {/* 🔥 jeśli backend zwróci dane */}
-            {workoutData ? (
-              workoutData.exercises?.map((ex, index) => (
-                <div
-                  key={index}
-                  className="exercise-card animation-slide-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="exercise-info">
-                    <div className="exercise-main">
-                      <span className="exercise-number">
-                        #{index + 1}
-                      </span>
-                      <h3 className="exercise-name">{ex.name}</h3>
-                    </div>
+                          <div className="exercise-stats">
+                            <div className="stat-box">
+                              <span className="stat-label">Weight</span>
+                              <span className="stat-value">{ex.weight}</span>
+                            </div>
 
-                    <div className="exercise-stats">
-                      <div className="stat-box">
-                        <span className="stat-label">Sets</span>
-                        <span className="stat-value">{ex.sets}</span>
+                            <div className="stat-box">
+                              <span className="stat-label">Sets</span>
+                              <span className="stat-value">{ex.sets}</span>
+                            </div>
+
+                            <div className="stat-box">
+                              <span className="stat-label">Reps</span>
+                              <span className="stat-value">{ex.reps}</span>
+                            </div>
+
+                            <div className="stat-box">
+                              <span className="stat-label">Rest</span>
+                              <span className="stat-value">{ex.rest}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className={`difficulty-badge ${ex.difficulty ? ex.difficulty.toLowerCase() : 'medium'}`}>
+                          {ex.difficulty || 'Medium'}
+                        </div>
                       </div>
-
-                      <div className="stat-box">
-                        <span className="stat-label">Reps</span>
-                        <span className="stat-value">{ex.reps}</span>
-                      </div>
-
-                      <div className="stat-box">
-                        <span className="stat-label">Rest</span>
-                        <span className="stat-value">{ex.rest}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={`difficulty-badge ${ex.difficulty?.toLowerCase()}`}>
-                    {ex.difficulty}
+                    ))}
                   </div>
                 </div>
               ))
             ) : (
-              [
-                { name: 'Barbell Squats', sets: '4', reps: '8-10', rest: '90s', difficulty: 'Hard' },
-                { name: 'Bench Press', sets: '3', reps: '10', rest: '60s', difficulty: 'Medium' },
-                { name: 'Pull-ups', sets: '3', reps: 'Max', rest: '60s', difficulty: 'Medium' },
-                { name: 'Plank', sets: '3', reps: '60s', rest: '30s', difficulty: 'Easy' }
-              ].map((ex, index) => (
-                <div
-                  key={index}
-                  className="exercise-card animation-slide-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="exercise-info">
-                    <div className="exercise-main">
-                      <span className="exercise-number">
-                        #0{index + 1}
-                      </span>
-                      <h3 className="exercise-name">{ex.name}</h3>
-                    </div>
-
-                    <div className="exercise-stats">
-                      <div className="stat-box">
-                        <span className="stat-label">Sets</span>
-                        <span className="stat-value">{ex.sets}</span>
-                      </div>
-
-                      <div className="stat-box">
-                        <span className="stat-label">Reps</span>
-                        <span className="stat-value">{ex.reps}</span>
-                      </div>
-
-                      <div className="stat-box">
-                        <span className="stat-label">Rest</span>
-                        <span className="stat-value">{ex.rest}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={`difficulty-badge ${ex.difficulty.toLowerCase()}`}>
-                    {ex.difficulty}
-                  </div>
-                </div>
-              ))
+              <p style={{ color: 'red', textAlign: 'center' }}>Wystąpił błąd podczas ładowania planu treningowego.</p>
             )}
-
           </div>
         )}
       </main>
