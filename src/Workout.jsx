@@ -6,6 +6,7 @@ function Workout() {
   const [isGenerated, setIsGenerated] = useState(false);
   const [workoutData, setWorkoutData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
@@ -20,7 +21,10 @@ function Workout() {
 
   useEffect(() => {
     const fetchExistingWorkout = async () => {
-      if (!userId || !token) return;
+      if (!userId || !token) {
+        setIsInitialLoading(false);
+        return;
+      }
 
       try {
         const res = await fetch(`${backendUrl}/my-plan/${userId}`, {
@@ -39,7 +43,9 @@ function Workout() {
           }
         }
       } catch (err) {
-        console.error("Błąd podczas sprawdzania istniejącego planu treningowego:", err);
+        console.error("Error checking existing workout plan:", err);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -48,8 +54,6 @@ function Workout() {
 
   const handleGenerateWorkout = async () => {
     setIsLoading(true);
-    setIsGenerated(true);
-
     try {
       const res = await fetch(`${backendUrl}/generate-plan`, {
         method: "POST",
@@ -59,14 +63,14 @@ function Workout() {
         },
       });
 
-      if (!res.ok) throw new Error("Błąd generowania treningu");
+      if (!res.ok) throw new Error("Workout generation failed");
 
       const data = await res.json();
       setWorkoutData(data.training);
-
+      setIsGenerated(true);
     } catch (err) {
       console.error(err);
-      setWorkoutData(null);
+      alert("An error occurred while generating the workout.");
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +82,7 @@ function Workout() {
     try {
       return JSON.parse(workoutData);
     } catch (e) {
-      console.error("Nie udało się sparsować JSONa treningu:", e);
+      console.error("Failed to parse workout JSON:", e);
       return null;
     }
   };
@@ -89,18 +93,14 @@ function Workout() {
     <div className="app-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
-
         <nav className="sidebar-nav">
           <Link to="/dashboard" className="sidebar-button">🏠 Dashboard</Link>
           <Link to="/diet" className="sidebar-button">🥗 Diet</Link>
           <Link to="/workout" className="sidebar-button active">💪 Workouts</Link>
           <Link to="/profile" className="sidebar-button">👤 Profile</Link>
         </nav>
-
         <div className="sidebar-footer">
-          <button className="sidebar-logout" onClick={handleLogout}>
-            Logout
-          </button>
+          <button className="sidebar-logout" onClick={handleLogout}>Logout</button>
         </div>
       </aside>
 
@@ -108,25 +108,28 @@ function Workout() {
         <header className="page-header">
           <div>
             <h1 className="page-title">Today's Workout 🔥</h1>
-            <p className="page-subtitle">
-              Crush your goals with a personalized routine
-            </p>
+            <p className="page-subtitle">Crush your goals with a personalized routine</p>
           </div>
 
           <button 
             className="generate-workout-btn" 
             onClick={handleGenerateWorkout}
-            disabled={isLoading}
-            style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+            disabled={isLoading || isInitialLoading}
+            style={{ opacity: (isLoading || isInitialLoading) ? 0.7 : 1, cursor: (isLoading || isInitialLoading) ? 'not-allowed' : 'pointer' }}
           >
             {isLoading ? "Generating..." : (isGenerated ? "Regenerate Training" : "Generate Training")}
           </button>
         </header>
 
-        {isLoading ? (
+        {isInitialLoading ? (
           <div className="empty-state-card workout-empty">
-            <h2>⏳ AI przygotowuje Twój trening...</h2>
-            <p>To potrwa tylko chwilę.</p>
+            <h2>⏳ Fetching data...</h2>
+            <p>Checking for your existing workout plan.</p>
+          </div>
+        ) : isLoading ? (
+          <div className="empty-state-card workout-empty">
+            <h2>🏋️‍♂️ AI is preparing your workout...</h2>
+            <p>This will only take a moment. Please do not refresh.</p>
           </div>
         ) : !isGenerated ? (
           <div className="empty-state-card workout-empty">
@@ -152,9 +155,7 @@ function Workout() {
                       >
                         <div className="exercise-info">
                           <div className="exercise-main">
-                            <span className="exercise-number">
-                              #{index + 1}
-                            </span>
+                            <span className="exercise-number">#{index + 1}</span>
                             <h3 className="exercise-name">{ex.exercise_name}</h3> 
                           </div>
 
@@ -163,17 +164,14 @@ function Workout() {
                               <span className="stat-label">Weight</span>
                               <span className="stat-value">{ex.weight}</span>
                             </div>
-
                             <div className="stat-box">
                               <span className="stat-label">Sets</span>
                               <span className="stat-value">{ex.sets}</span>
                             </div>
-
                             <div className="stat-box">
                               <span className="stat-label">Reps</span>
                               <span className="stat-value">{ex.reps}</span>
                             </div>
-
                             <div className="stat-box">
                               <span className="stat-label">Rest</span>
                               <span className="stat-value">{ex.rest}</span>
@@ -190,7 +188,7 @@ function Workout() {
                 </div>
               ))
             ) : (
-              <p style={{ color: 'red', textAlign: 'center' }}>Wystąpił błąd podczas ładowania planu treningowego.</p>
+              <p style={{ color: 'red', textAlign: 'center' }}>Error displaying the workout plan. Please try again.</p>
             )}
           </div>
         )}

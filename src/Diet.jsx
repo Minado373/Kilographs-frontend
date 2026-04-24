@@ -6,6 +6,7 @@ function Diet() {
   const [isGenerated, setIsGenerated] = useState(false);
   const [dietData, setDietData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
@@ -18,9 +19,12 @@ function Diet() {
     navigate('/login');
   };
 
-useEffect(() => {
+  useEffect(() => {
     const fetchExistingDiet = async () => {
-      if (!userId || !token) return;
+      if (!userId || !token) {
+        setIsInitialLoading(false);
+        return;
+      }
 
       try {
         const res = await fetch(`${backendUrl}/my-plan/${userId}`, {
@@ -39,7 +43,9 @@ useEffect(() => {
           }
         }
       } catch (err) {
-        console.error("Błąd podczas sprawdzania istniejącego planu:", err);
+        console.error("Error fetching existing plan:", err);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -48,8 +54,6 @@ useEffect(() => {
 
   const handleGenerateDiet = async () => {
     setIsLoading(true);
-    setIsGenerated(true);
-
     try {
       const res = await fetch(`${backendUrl}/generate-plan`, {
         method: "POST",
@@ -59,14 +63,14 @@ useEffect(() => {
         },
       });
 
-      if (!res.ok) throw new Error("Błąd generowania planu");
+      if (!res.ok) throw new Error("Plan generation failed");
 
       const data = await res.json();
       setDietData(data.diet);
-
+      setIsGenerated(true);
     } catch (err) {
       console.error(err);
-      setDietData(null);
+      alert("An error occurred while generating the plan.");
     } finally {
       setIsLoading(false);
     }
@@ -78,29 +82,25 @@ useEffect(() => {
     try {
       return JSON.parse(dietData);
     } catch (e) {
-      console.error("Nie udało się sparsować JSONa diety:", e);
+      console.error("Failed to parse diet JSON:", e);
       return null;
     }
   };
 
   const parsedDiet = getParsedDiet();
 
-return (
+  return (
     <div className="app-layout">
       <aside className="sidebar">
         <h2 className="sidebar-logo">KiloGraphs</h2>
-
         <nav className="sidebar-nav">
           <Link to="/dashboard" className="sidebar-button">🏠 Dashboard</Link>
           <Link to="/diet" className="sidebar-button active">🥗 Diet</Link>
           <Link to="/workout" className="sidebar-button">💪 Workouts</Link>
           <Link to="/profile" className="sidebar-button">👤 Profile</Link>
         </nav>
-
         <div className="sidebar-footer">
-          <button className="sidebar-logout" onClick={handleLogout}>
-            Logout
-          </button>
+          <button className="sidebar-logout" onClick={handleLogout}>Logout</button>
         </div>
       </aside>
 
@@ -108,24 +108,27 @@ return (
         <header className="page-header">
           <div>
             <h1 className="page-title">Your Daily Diet 🍎</h1>
-            <p className="page-subtitle">
-              Manage your nutrition and meal plans
-            </p>
+            <p className="page-subtitle">Manage your nutrition and meal plans</p>
           </div>
 
           <button 
             className="generate-btn" 
             onClick={handleGenerateDiet}
-            disabled={isLoading}
+            disabled={isLoading || isInitialLoading}
           >
             {isLoading ? "Generating..." : (isGenerated ? "Regenerate Plan" : "Generate New Plan")}
           </button>
         </header>
 
-        {isLoading ? (
+        {isInitialLoading ? (
           <div className="empty-state-card">
-            <h2>⏳ AI przygotowuje Twój plan...</h2>
-            <p>Może to potrwać kilka sekund.</p>
+            <h2>⏳ Fetching data...</h2>
+            <p>Checking for your existing plan.</p>
+          </div>
+        ) : isLoading ? (
+          <div className="empty-state-card">
+            <h2>🥗 AI is preparing your plan...</h2>
+            <p>This may take a few seconds. Please do not refresh the page.</p>
           </div>
         ) : !isGenerated ? (
           <div className="empty-state-card">
@@ -171,7 +174,7 @@ return (
                 ))}
               </div>
             ) : (
-               <p style={{ color: 'red' }}>Wystąpił błąd podczas ładowania planu diety.</p>
+               <p style={{ color: 'red' }}>Error displaying the diet plan. Please try again.</p>
             )}
           </div>
         )}
