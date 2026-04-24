@@ -482,3 +482,136 @@ body {
   .page-content, .profile-content { margin-left: 0; padding: 1rem; }
   .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid #e5e7eb; }
 }
+
+/* =========================================
+   PREMIUM PAGE STYLES
+========================================= */
+.text-gold {
+  color: #eab308;
+}
+
+.border-gold {
+  border-bottom: 6px solid #eab308;
+}
+
+.premium-page-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.premium-hero {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  margin-top: 2rem;
+}
+
+.premium-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.premium-subtitle {
+  font-size: 1.2rem;
+  color: #4b5563;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.premium-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 4rem;
+}
+
+.feature-card {
+  background: white;
+  padding: 2.5rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-top: 5px solid #eab308;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.premium-cta-section {
+  text-align: center;
+  background: white;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 500px;
+}
+
+.price-tag h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.price-period {
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.price-tag p {
+  color: #6b7280;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.btn-subscribe {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.75rem;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-subscribe:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.4);
+}
+
+.btn-subscribe:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}

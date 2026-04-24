@@ -7,6 +7,9 @@ import Profile from './Profile'
 import Dashboard from './Dashboard'
 import Diet from './Diet'
 import Workout from './Workout'
+import Premium from './Premium'
+import Success from './Success'
+import Cancel from './Cancel'
 
 function LandingPage() {
   return (
@@ -53,6 +56,12 @@ function App() {
         <Route path="/diet" element={<Diet />} />
 
         <Route path="/workout" element={<Workout />} />
+        
+        <Route path="/premium" element={<Premium />} />
+
+        <Route path="/success" element={<Success />} />
+
+        <Route path="/cancel" element={<Cancel />} />
       </Routes>
     </BrowserRouter>
   )

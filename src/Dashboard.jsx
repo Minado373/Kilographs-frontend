@@ -22,6 +22,8 @@ function Dashboard() {
   const userName = localStorage.getItem("userName") || "Użytkownik";
   const userId = localStorage.getItem("userId");
 
+  const isPremium = localStorage.getItem("isPremium") === "true";
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (!userId) {
@@ -147,10 +149,39 @@ function Dashboard() {
               <p className="widget-label">Water</p>
 
               <h3 className="widget-value">
-                {calories ? `${(calories * 0.001).toFixed(1)} L` : "3.0 L"}
+                {loading 
+                  ? "Loading..." 
+                  : calories 
+                    ? `${(calories * 0.001).toFixed(1)} L` 
+                    : "-"}
               </h3>
             </div>
           </div>
+
+          {!isPremium ? (
+            <div 
+              className="widget-card border-gold" 
+              onClick={() => navigate('/premium')}
+            >
+              <div className="widget-info">
+                <p className="widget-label" style={{ color: '#ca8a04' }}>⭐ KiloGraphs Premium</p>
+                <h3 className="widget-value" style={{ fontSize: '1.5rem' }}>No AI Limits</h3>
+                <p style={{ marginTop: '0.5rem', color: '#6b7280', fontSize: '0.9rem' }}>
+                  Click here to explore the benefits of our subscription.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="widget-card border-green">
+              <div className="widget-info">
+                <p className="widget-label" style={{ color: '#16a34a' }}>👑 Your Status</p>
+                <h3 className="widget-value" style={{ fontSize: '1.5rem' }}>Premium Active</h3>
+                <p style={{ marginTop: '0.5rem', color: '#6b7280', fontSize: '0.9rem' }}>
+                  Thank you for your support! You have unlimited access.
+                </p>
+              </div>
+            </div>
+          )}
 
         </div>
       </main>
