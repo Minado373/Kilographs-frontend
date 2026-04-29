@@ -8,6 +8,13 @@ function Diet() {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
+  const [status, setStatus] = useState({ message: "", type: "" });
+
+  const showStatus = (msg, type) => {
+    setStatus({ message: msg, type });
+    setTimeout(() => setStatus({ message: "", type: "" }), 4000);
+  };
+
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
@@ -53,6 +60,12 @@ function Diet() {
   }, [backendUrl, token, userId]);
 
   const handleGenerateDiet = async () => {
+    const userCalories = localStorage.getItem("userCalories");
+    if (!userCalories) {
+      showStatus("You need to complete your profile first.", "error");
+      return; 
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch(`${backendUrl}/generate-plan`, {
@@ -119,6 +132,13 @@ function Diet() {
             {isLoading ? "Generating..." : (isGenerated ? "Regenerate Plan" : "Generate New Plan")}
           </button>
         </header>
+
+        {status.message && (
+          <div className={`status-message ${status.type}`} style={{ maxWidth: '100%', marginBottom: '2rem' }}>
+            {status.type === "success" ? "✅ " : "❌ "}
+            {status.message}
+          </div>
+        )}
 
         {isInitialLoading ? (
           <div className="empty-state-card">
