@@ -101,6 +101,18 @@ function Profile() {
     showStatus("Please fill Age, Weight and Height with valid numbers.", "error");
     return;
   }
+  if (ageNum < 12 || ageNum > 120) {
+      showStatus("Age must be between 12 and 120 years.", "error");
+      return;
+  }
+  if (weightNum < 30 || weightNum > 300) {
+      showStatus("Weight must be between 30 and 300 kg.", "error");
+      return;
+  }
+  if (heightNum < 100 || heightNum > 250) {
+    showStatus("Height must be between 100 and 250 cm.", "error");
+    return;
+  }
 
 
   const palValues = [1.2, 1.4, 1.6, 1.8];
@@ -188,15 +200,15 @@ function Profile() {
               </div>
               <div className="input-group">
                 <label>Age</label>
-                <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
+                <input type="number" min="12" max="120" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
               </div>
               <div className="input-group">
                 <label>Weight (kg)</label>
-                <input type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="80" />
+                <input type="number" step="0.1" min="30" max="300" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="80" />
               </div>
               <div className="input-group">
                 <label>Height (cm)</label>
-                <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="180" />
+                <input type="number" min="100" max="250" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="180" />
               </div>
             </div>
 
@@ -249,9 +261,11 @@ function Profile() {
               </select>
             </div>
 
-            {/* KOMUNIKAT STATUSU */}
             {status.message && (
-              <div className={`status-message ${status.type}`}>
+              <div 
+                className={`status-message ${status.type}`} 
+                style={{ marginTop: "2rem", marginBottom: "1rem" }}
+              >
                 {status.type === "success" ? "✅ " : "❌ "}
                 {status.message}
               </div>

@@ -64,7 +64,7 @@ function Diet() {
     if (!userCalories) {
       showStatus("You need to complete your profile first.", "error");
       return; 
-    }
+    }100,6
 
     setIsLoading(true);
     try {
