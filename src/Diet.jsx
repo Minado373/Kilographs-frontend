@@ -2,14 +2,76 @@ import './style.css';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+function MealCard({ mealType, mealInfo }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div 
+      className={`meal-card ${isOpen ? 'open' : ''}`} 
+      onClick={() => setIsOpen(!isOpen)}
+      style={{ 
+        padding: '1rem', 
+        border: '1px solid #eaeaea', 
+        borderRadius: '8px', 
+        backgroundColor: isOpen ? '#ffffff' : '#fafafa',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease-in-out',
+        boxShadow: isOpen ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+        position: 'relative'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ color: '#4CAF50', textTransform: 'uppercase', fontSize: '0.8rem', margin: 0, fontWeight: 'bold' }}>
+          {mealType}
+        </h3>
+        <span style={{ fontSize: '0.7rem', color: '#888' }}>
+          {isOpen ? '▲ COLLAPSE' : '▼ VIEW DETAILS'}
+        </span>
+      </div>
+      
+      <h4 style={{ margin: '8px 0', color: '#111', fontSize: '1.1rem' }}>{mealInfo.name}</h4>
+      
+      <div style={{ display: 'flex', gap: '10px', fontSize: '0.85rem', color: '#666' }}>
+        <span>🔥 {mealInfo.calories} kcal</span>
+        <span>P: {mealInfo.macros?.p}g</span>
+        <span>C: {mealInfo.macros?.c}g</span>
+        <span>F: {mealInfo.macros?.f}g</span>
+      </div>
+
+      {isOpen && (
+        <div style={{ 
+          marginTop: '15px', 
+          paddingTop: '12px', 
+          borderTop: '1px solid #eee',
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          <strong style={{ fontSize: '0.9rem', color: '#333' }}>Ingredients & Quantities:</strong>
+          <ul style={{ margin: '8px 0 12px 0', paddingLeft: '1.2rem', color: '#555', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            {mealInfo.ingredients?.map((ing, idx) => (
+              <li key={idx}>{ing}</li>
+            ))}
+          </ul>
+          
+          {mealInfo.instructions && (
+            <div style={{ backgroundColor: '#f0f7f0', padding: '10px', borderRadius: '6px' }}>
+              <strong style={{ fontSize: '0.85rem', color: '#2e7d32' }}>Quick Instructions:</strong>
+              <p style={{ margin: '5px 0 0 0', fontSize: '0.85rem', color: '#555', lineHeight: '1.4' }}>
+                {mealInfo.instructions}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Diet() {
   const [isGenerated, setIsGenerated] = useState(false);
   const [dietData, setDietData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-
   const [status, setStatus] = useState({ message: "", type: "" });
-
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
 
   const loadingMessages = [
@@ -19,6 +81,11 @@ function Diet() {
     "Putting it all together...",
     "Almost ready..."
   ];
+
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     let interval;
@@ -36,12 +103,6 @@ function Diet() {
     setTimeout(() => setStatus({ message: "", type: "" }), 4000);
   };
 
-  const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
-
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
-
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
@@ -53,7 +114,6 @@ function Diet() {
         setIsInitialLoading(false);
         return;
       }
-
       try {
         const res = await fetch(`${backendUrl}/my-plan/${userId}`, {
           method: "GET",
@@ -62,7 +122,6 @@ function Diet() {
             Authorization: `Bearer ${token}`,
           },
         });
-
         if (res.ok) {
           const data = await res.json();
           if (data && data.diet) {
@@ -71,18 +130,16 @@ function Diet() {
           }
         }
       } catch (err) {
-        console.error("Error fetching existing plan:", err);
+        console.error(err);
       } finally {
         setIsInitialLoading(false);
       }
     };
-
     fetchExistingDiet();
   }, [backendUrl, token, userId]);
 
   const handleGenerateDiet = async () => {
     setIsLoading(true);
-    
     try {
       const profileRes = await fetch(`${backendUrl}/profile/${userId}`, {
         method: "GET",
@@ -99,7 +156,6 @@ function Diet() {
       }
 
       const profileData = await profileRes.json();
-      
       if (!profileData.calories) {
         showStatus("You need to complete your profile first.", "error");
         setIsLoading(false);
@@ -129,13 +185,16 @@ function Diet() {
 
   const getParsedDiet = () => {
     if (!dietData) return null;
-    if (typeof dietData === 'object') return dietData;
-    try {
-      return JSON.parse(dietData);
-    } catch (e) {
-      console.error("Failed to parse diet JSON:", e);
-      return null;
+    let data = dietData;
+    if (typeof dietData === 'string') {
+      try {
+        data = JSON.parse(dietData);
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
     }
+    return data.diet_plan ? data.diet_plan : data;
   };
 
   const parsedDiet = getParsedDiet();
@@ -200,44 +259,35 @@ function Diet() {
             {parsedDiet ? (
               <div className="diet-days-list">
                 {Object.entries(parsedDiet).map(([dayName, meals]) => (
-                  <div key={dayName} className="diet-day-card" style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h2 style={{ textTransform: 'capitalize', borderBottom: '2px solid #eee', paddingBottom: '10px', color: '#333' }}>
-                      {dayName.replace('_', ' ')}
+                  <div key={dayName} className="diet-day-card" style={{ marginBottom: '2.5rem', padding: '1.5rem', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+                    <h2 style={{ textTransform: 'capitalize', borderBottom: '2px solid #f0f0f0', paddingBottom: '12px', color: '#222', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      📅 {dayName.replace('_', ' ')}
                     </h2>
                     
-                    <div className="meals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="meals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.2rem' }}>
                       {Object.entries(meals).map(([mealType, mealInfo]) => (
-                        <div key={mealType} className="meal-card" style={{ padding: '1rem', border: '1px solid #eaeaea', borderRadius: '8px', backgroundColor: '#fafafa' }}>
-                          <h3 style={{ color: '#4CAF50', textTransform: 'uppercase', fontSize: '0.9rem', marginBottom: '5px' }}>{mealType}</h3>
-                          <h4 style={{ margin: '0 0 10px 0', color: '#111' }}>{mealInfo.name}</h4>
-                          
-                          <div style={{ display: 'flex', gap: '10px', fontSize: '0.85rem', color: '#666', marginBottom: '10px' }}>
-                            <span>🔥 {mealInfo.calories} kcal</span>
-                            <span>P: {mealInfo.macros?.p}g</span>
-                            <span>C: {mealInfo.macros?.c}g</span>
-                            <span>F: {mealInfo.macros?.f}g</span>
-                          </div>
-
-                          <div className="ingredients" style={{ fontSize: '0.85rem' }}>
-                            <strong>Ingredients:</strong>
-                            <ul style={{ margin: '5px 0 0 0', paddingLeft: '20px', color: '#555' }}>
-                              {mealInfo.ingredients?.map((ing, idx) => (
-                                <li key={idx}>{ing}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
+                        <MealCard key={mealType} mealType={mealType} mealInfo={mealInfo} />
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-               <p style={{ color: 'red' }}>Error displaying the diet plan. Please try again.</p>
+               <p style={{ color: 'red', textAlign: 'center' }}>Error displaying the diet plan. Please try again.</p>
             )}
           </div>
         )}
       </main>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .meal-card:hover {
+          border-color: #4CAF50 !important;
+        }
+      `}</style>
     </div>
   );
 }

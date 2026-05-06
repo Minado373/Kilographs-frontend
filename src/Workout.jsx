@@ -2,16 +2,78 @@ import './style.css';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+function ExerciseCard({ ex, index }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div
+      className={`exercise-card animation-slide-in ${isOpen ? 'active' : ''}`}
+      style={{ 
+        animationDelay: `${index * 0.1}s`,
+        cursor: 'pointer',
+        height: 'auto',
+        minHeight: 'fit-content'
+      }}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="exercise-info" style={{ width: '100%' }}>
+        <div className="exercise-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Numer i nazwa w jednej linii */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span className="exercise-number" style={{ margin: 0 }}>#{index + 1}</span>
+            <h3 className="exercise-name" style={{ margin: 0 }}>{ex.exercise_name}</h3>
+          </div>
+          
+          <div className={`difficulty-badge ${ex.difficulty ? ex.difficulty.toLowerCase() : 'medium'}`} style={{ position: 'relative', top: '0', right: '0', margin: '0' }}>
+            {ex.difficulty || 'Medium'}
+          </div>
+        </div>
+
+        <div className="exercise-stats">
+          <div className="stat-box">
+            <span className="stat-label">Weight</span>
+            <span className="stat-value">{ex.weight}</span>
+          </div>
+          <div className="stat-box">
+            <span className="stat-label">Sets</span>
+            <span className="stat-value">{ex.sets}</span>
+          </div>
+          <div className="stat-box">
+            <span className="stat-label">Reps</span>
+            <span className="stat-value">{ex.reps}</span>
+          </div>
+          <div className="stat-box">
+            <span className="stat-label">Rest</span>
+            <span className="stat-value">{ex.rest}</span>
+          </div>
+        </div>
+
+        {isOpen && (
+          <div style={{ 
+            marginTop: '15px', 
+            paddingTop: '12px', 
+            borderTop: '1px solid #eee', 
+            fontSize: '0.85rem', 
+            color: '#666',
+            lineHeight: '1.4',
+            animation: 'fadeIn 0.3s ease'
+          }}>
+            <strong style={{ color: '#333' }}>How to perform:</strong> {ex.description || "No description provided."}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Workout() {
   const [isGenerated, setIsGenerated] = useState(false);
   const [workoutData, setWorkoutData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-
   const [status, setStatus] = useState({ message: "", type: "" });
-
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
-  
+
   const loadingMessages = [
     "Analyzing your profile and goals...",
     "Selecting optimal exercises...",
@@ -19,7 +81,12 @@ function Workout() {
     "Structuring your workout routine...",
     "Almost ready to sweat..."
   ];
-  
+
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     let interval;
     if (isLoading) {
@@ -30,17 +97,11 @@ function Workout() {
     }
     return () => clearInterval(interval);
   }, [isLoading]);
-  
+
   const showStatus = (msg, type) => {
     setStatus({ message: msg, type });
     setTimeout(() => setStatus({ message: "", type: "" }), 4000);
   };
-
-  const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
-
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
 
   const handleLogout = () => {
     localStorage.clear();
@@ -53,7 +114,6 @@ function Workout() {
         setIsInitialLoading(false);
         return;
       }
-
       try {
         const res = await fetch(`${backendUrl}/my-plan/${userId}`, {
           method: "GET",
@@ -62,7 +122,6 @@ function Workout() {
             Authorization: `Bearer ${token}`,
           },
         });
-
         if (res.ok) {
           const data = await res.json();
           if (data && data.training) {
@@ -76,13 +135,11 @@ function Workout() {
         setIsInitialLoading(false);
       }
     };
-
     fetchExistingWorkout();
   }, [backendUrl, token, userId]);
 
   const handleGenerateWorkout = async () => {
     setIsLoading(true);
-    
     try {
       const profileRes = await fetch(`${backendUrl}/profile/${userId}`, {
         method: "GET",
@@ -96,14 +153,6 @@ function Workout() {
         showStatus("You need to complete your profile first.", "error");
         setIsLoading(false);
         return; 
-      }
-
-      const profileData = await profileRes.json();
-      
-      if (!profileData.calories) {
-        showStatus("You need to complete your profile first.", "error");
-        setIsLoading(false);
-        return;
       }
 
       const res = await fetch(`${backendUrl}/generate-plan`, {
@@ -129,13 +178,16 @@ function Workout() {
 
   const getParsedWorkout = () => {
     if (!workoutData) return null;
-    if (typeof workoutData === 'object') return workoutData;
-    try {
-      return JSON.parse(workoutData);
-    } catch (e) {
-      console.error("Failed to parse workout JSON:", e);
-      return null;
+    let data = workoutData;
+    if (typeof workoutData === 'string') {
+      try {
+        data = JSON.parse(workoutData);
+      } catch (e) {
+        console.error("Failed to parse workout JSON:", e);
+        return null;
+      }
     }
+    return data;
   };
 
   const parsedWorkout = getParsedWorkout();
@@ -207,41 +259,7 @@ function Workout() {
                   
                   <div className="workout-list">
                     {exercises.map((ex, index) => (
-                      <div
-                        key={index}
-                        className="exercise-card animation-slide-in"
-                        style={{ animationDelay: `${index * 0.1}s` }}
-                      >
-                        <div className="exercise-info">
-                          <div className="exercise-main">
-                            <span className="exercise-number">#{index + 1}</span>
-                            <h3 className="exercise-name">{ex.exercise_name}</h3> 
-                          </div>
-
-                          <div className="exercise-stats">
-                            <div className="stat-box">
-                              <span className="stat-label">Weight</span>
-                              <span className="stat-value">{ex.weight}</span>
-                            </div>
-                            <div className="stat-box">
-                              <span className="stat-label">Sets</span>
-                              <span className="stat-value">{ex.sets}</span>
-                            </div>
-                            <div className="stat-box">
-                              <span className="stat-label">Reps</span>
-                              <span className="stat-value">{ex.reps}</span>
-                            </div>
-                            <div className="stat-box">
-                              <span className="stat-label">Rest</span>
-                              <span className="stat-value">{ex.rest}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className={`difficulty-badge ${ex.difficulty ? ex.difficulty.toLowerCase() : 'medium'}`}>
-                          {ex.difficulty || 'Medium'}
-                        </div>
-                      </div>
+                      <ExerciseCard key={index} ex={ex} index={index} />
                     ))}
                   </div>
                 </div>
@@ -252,6 +270,13 @@ function Workout() {
           </div>
         )}
       </main>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
