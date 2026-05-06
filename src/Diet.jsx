@@ -81,14 +81,31 @@ function Diet() {
   }, [backendUrl, token, userId]);
 
   const handleGenerateDiet = async () => {
-    const userCalories = localStorage.getItem("userCalories");
-    if (!userCalories) {
-      showStatus("You need to complete your profile first.", "error");
-      return; 
-    }100,6
-
     setIsLoading(true);
+    
     try {
+      const profileRes = await fetch(`${backendUrl}/profile/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!profileRes.ok) {
+        showStatus("You need to complete your profile first.", "error");
+        setIsLoading(false);
+        return; 
+      }
+
+      const profileData = await profileRes.json();
+      
+      if (!profileData.calories) {
+        showStatus("You need to complete your profile first.", "error");
+        setIsLoading(false);
+        return;
+      }
+
       const res = await fetch(`${backendUrl}/generate-plan`, {
         method: "POST",
         headers: {
