@@ -9,6 +9,27 @@ function Workout() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const [status, setStatus] = useState({ message: "", type: "" });
+
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  
+  const loadingMessages = [
+    "Analyzing your profile and goals...",
+    "Selecting optimal exercises...",
+    "Calculating sets, reps, and weights...",
+    "Structuring your workout routine...",
+    "Almost ready to sweat..."
+  ];
+  
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      setLoadingTextIndex(0);
+      interval = setInterval(() => {
+        setLoadingTextIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
   
   const showStatus = (msg, type) => {
     setStatus({ message: msg, type });
@@ -147,9 +168,10 @@ function Workout() {
             <p>Checking for your existing workout plan.</p>
           </div>
         ) : isLoading ? (
-          <div className="empty-state-card workout-empty">
+          <div className="empty-state-card workout-empty loader-container">
+            <div className="spinner"></div>
             <h2>🏋️‍♂️ AI is preparing your workout...</h2>
-            <p>This will only take a moment. Please do not refresh.</p>
+            <p className="loading-pulse">{loadingMessages[loadingTextIndex]}</p>
           </div>
         ) : !isGenerated ? (
           <div className="empty-state-card workout-empty">

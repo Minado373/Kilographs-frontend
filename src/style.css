@@ -615,3 +615,41 @@ body {
   cursor: not-allowed;
   transform: none;
 }
+
+/* =========================================
+    LOADER STYLES
+========================================= */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #16a34a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+.loading-pulse {
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  min-height: 24px;
+  animation: pulse-text 1.5s infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

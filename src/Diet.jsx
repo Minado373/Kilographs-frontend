@@ -10,6 +10,27 @@ function Diet() {
 
   const [status, setStatus] = useState({ message: "", type: "" });
 
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+
+  const loadingMessages = [
+    "Analyzing your profile and goals...",
+    "Calculating perfect macronutrients...",
+    "Selecting delicious and healthy meals...",
+    "Putting it all together...",
+    "Almost ready..."
+  ];
+
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      setLoadingTextIndex(0);
+      interval = setInterval(() => {
+        setLoadingTextIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   const showStatus = (msg, type) => {
     setStatus({ message: msg, type });
     setTimeout(() => setStatus({ message: "", type: "" }), 4000);
@@ -146,9 +167,10 @@ function Diet() {
             <p>Checking for your existing plan.</p>
           </div>
         ) : isLoading ? (
-          <div className="empty-state-card">
+          <div className="empty-state-card loader-container">
+            <div className="spinner"></div>
             <h2>🥗 AI is preparing your plan...</h2>
-            <p>This may take a few seconds. Please do not refresh the page.</p>
+            <p className="loading-pulse">{loadingMessages[loadingTextIndex]}</p>
           </div>
         ) : !isGenerated ? (
           <div className="empty-state-card">
