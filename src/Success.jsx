@@ -6,8 +6,6 @@ function Success() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("isPremium", "true");
-
     const timer = setTimeout(() => {
       navigate('/dashboard');
     }, 4000);

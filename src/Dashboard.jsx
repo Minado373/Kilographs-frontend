@@ -22,10 +22,10 @@ function Dashboard() {
   const userName = localStorage.getItem("userName") || "Użytkownik";
   const userId = localStorage.getItem("userId");
 
-  const isPremium = localStorage.getItem("isPremium") === "true";
+  const [isPremium, setIsPremium] = useState(false);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+useEffect(() => {
+    const fetchData = async () => {
       if (!userId) {
         setLoading(false);
         navigate("/login");
@@ -41,36 +41,40 @@ function Dashboard() {
           return;
         }
 
-        const res = await fetch(`${backendUrl}/profile/${userId}`, {
+        const userRes = await fetch(`${backendUrl}/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!res.ok) throw new Error("Błąd pobierania profilu");
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setIsPremium(userData.is_premium);
+        }
 
-        const data = await res.json();
+        const profileRes = await fetch(`${backendUrl}/profile/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (data?.calories) {
-          setCalories(data.calories);
-          localStorage.setItem("userCalories", data.calories);
-        } else {
-          const localCalories = localStorage.getItem("userCalories");
-          if (localCalories) setCalories(localCalories);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          if (profileData?.calories) {
+            setCalories(profileData.calories);
+          }
         }
       } catch (err) {
-        console.error("Fetch profile error:", err);
-
-        const localCalories = localStorage.getItem("userCalories");
-        if (localCalories) setCalories(localCalories);
+        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, [userId, navigate, backendUrl]);
 
+  
   return (
     <div className="app-layout">
       <aside className="sidebar">
