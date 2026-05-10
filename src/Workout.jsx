@@ -18,7 +18,6 @@ function ExerciseCard({ ex, index }) {
     >
       <div className="exercise-info" style={{ width: '100%' }}>
         <div className="exercise-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* Numer i nazwa w jednej linii */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span className="exercise-number" style={{ margin: 0 }}>#{index + 1}</span>
             <h3 className="exercise-name" style={{ margin: 0 }}>{ex.exercise_name}</h3>
@@ -100,7 +99,7 @@ function Workout() {
 
   const showStatus = (msg, type) => {
     setStatus({ message: msg, type });
-    setTimeout(() => setStatus({ message: "", type: "" }), 4000);
+    setTimeout(() => setStatus({ message: "", type: "" }), 6000);
   };
 
   const handleLogout = () => {
@@ -163,14 +162,23 @@ function Workout() {
         },
       });
 
-      if (!res.ok) throw new Error("Workout generation failed");
+      if (!res.ok) {
+        if (res.status === 429) {
+          const errorData = await res.json();
+          showStatus(errorData.detail, "error");
+          setIsLoading(false);
+          return;
+        }
+        throw new Error("Workout generation failed");
+      }
 
       const data = await res.json();
       setWorkoutData(data.training);
       setIsGenerated(true);
+      showStatus("Training generated successfully!", "success");
     } catch (err) {
       console.error(err);
-      alert("An error occurred while generating the workout.");
+      showStatus("An error occurred while generating the workout. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }

@@ -100,7 +100,7 @@ function Diet() {
 
   const showStatus = (msg, type) => {
     setStatus({ message: msg, type });
-    setTimeout(() => setStatus({ message: "", type: "" }), 4000);
+    setTimeout(() => setStatus({ message: "", type: "" }), 6000); 
   };
 
   const handleLogout = () => {
@@ -170,14 +170,23 @@ function Diet() {
         },
       });
 
-      if (!res.ok) throw new Error("Plan generation failed");
+      if (!res.ok) {
+        if (res.status === 429) {
+          const errorData = await res.json();
+          showStatus(errorData.detail, "error");
+          setIsLoading(false);
+          return;
+        }
+        throw new Error("Plan generation failed");
+      }
 
       const data = await res.json();
       setDietData(data.diet);
       setIsGenerated(true);
+      showStatus("Plan generated successfully!", "success");
     } catch (err) {
       console.error(err);
-      alert("An error occurred while generating the plan.");
+      showStatus("An error occurred while generating the plan. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }
