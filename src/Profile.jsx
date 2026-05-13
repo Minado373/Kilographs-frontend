@@ -115,7 +115,7 @@ function Profile() {
   }
 
 
-  const palValues = [1.2, 1.4, 1.6, 1.8];
+  const palValues = [1.2, 1.375, 1.55, 1.725];
   const pal = palValues[parseInt(activity)] || 1.2;
 
   let bmr =
